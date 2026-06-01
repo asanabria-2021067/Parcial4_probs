@@ -65,3 +65,60 @@ p_cond = casos_ambas_condiciones / casos_al_menos_un_par # Estimación para la p
 # Imprimimos los resultados formateando el número decimal a 4 decimales (:.4f) según lo solicitado.
 print(f"P(suma = 7) = {p_suma_7:.4f}")
 print(f"P(suma = 7 | al menos un par) = {p_cond:.4f}")
+
+
+# --------------------- PREGUNTAS PRUEBA -----------------------
+# Cada bloque es independiente: vuelve a fijar la semilla (random.seed(SEED))
+# para que su resultado sea reproducible por separado.
+# Descomenta o ejecuta el archivo completo para ver todas las respuestas.
+
+# ── PREGUNTA 1: P(suma = 8) ──────────────────────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    if random.randint(1, 6) + random.randint(1, 6) == 8:
+        casos += 1
+print(f"[P1] P(suma = 8) = {casos / R:.4f}")
+
+# ── PREGUNTA 2: P(la suma es par) ────────────────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    suma = random.randint(1, 6) + random.randint(1, 6)
+    if suma % 2 == 0:           # par si el residuo entre 2 es 0
+        casos += 1
+print(f"[P2] P(suma par) = {casos / R:.4f}")
+
+# ── PREGUNTA 3: P(|dado1 - dado2| = 2) ───────────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    dado1 = random.randint(1, 6)
+    dado2 = random.randint(1, 6)
+    if abs(dado1 - dado2) == 2:   # abs() = valor absoluto (la diferencia sin signo)
+        casos += 1
+print(f"[P3] P(|dado1 - dado2| = 2) = {casos / R:.4f}")
+
+# ── PREGUNTA 4: E[max(dado1, dado2)] ─────────────────────────
+# Valor esperado del MAYOR de los dos dados. Acumulamos el mayor y promediamos.
+random.seed(SEED)
+suma_max = 0
+for _ in range(R):
+    dado1 = random.randint(1, 6)
+    dado2 = random.randint(1, 6)
+    suma_max += max(dado1, dado2)   # max() devuelve el mayor de los dos
+print(f"[P4] E[max(dado1, dado2)] = {suma_max / R:.4f}")
+
+# ── PREGUNTA 5: P(suma par | dado1 > dado2) ──────────────────
+# Condicional: el "universo" son los casos donde dado1 > dado2 (denominador).
+random.seed(SEED)
+casos_d1_mayor = 0       # denominador: dado1 > dado2
+casos_par_y_mayor = 0    # numerador: suma par Y dado1 > dado2
+for _ in range(R):
+    dado1 = random.randint(1, 6)
+    dado2 = random.randint(1, 6)
+    if dado1 > dado2:
+        casos_d1_mayor += 1
+        if (dado1 + dado2) % 2 == 0:
+            casos_par_y_mayor += 1
+print(f"[P5] P(suma par | dado1 > dado2) = {casos_par_y_mayor / casos_d1_mayor:.4f}")

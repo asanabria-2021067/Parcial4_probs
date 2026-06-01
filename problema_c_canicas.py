@@ -77,3 +77,71 @@ for _ in range(R):
 # P(Caja 1 | una roja y una verde) = P(Caja 1 y una roja y una verde) / P(una roja y una verde)
 p_caja1_dado_rv = casos_c1_rv / casos_roja_y_verde
 print(f"P(Caja 1 | una roja y una verde) = {p_caja1_dado_rv:.4f}")
+
+
+# --------------------- PREGUNTAS PRUEBA -----------------------
+# Cada bloque es independiente: vuelve a fijar la semilla (random.seed(SEED))
+# para que su resultado sea reproducible por separado.
+# Descomenta o ejecuta el archivo completo para ver todas las respuestas.
+
+# Caja base: 5 rojas (0), 3 azules (1), 2 verdes (2)
+caja = [0]*5 + [1]*3 + [2]*2
+
+# ── PREGUNTA 1: P(ambas canicas son azules) ──────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(caja, 2)
+    if muestra[0] == 1 and muestra[1] == 1:
+        casos += 1
+print(f"[P1] P(ambas azules) = {casos / R:.4f}")
+
+# ── PREGUNTA 2: P(ninguna canica es roja) ────────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(caja, 2)
+    if muestra[0] != 0 and muestra[1] != 0:
+        casos += 1
+print(f"[P2] P(ninguna roja) = {casos / R:.4f}")
+
+# ── PREGUNTA 3: P(exactamente 1 azul | al menos 1 roja) ──────
+# Condicional: el universo son las muestras con al menos una roja (denominador).
+random.seed(SEED)
+casos_al_menos_roja = 0   # denominador
+casos_1_azul = 0          # numerador: exactamente 1 azul Y al menos 1 roja
+for _ in range(R):
+    muestra = random.sample(caja, 2)
+    if 0 in muestra:                     # al menos una roja
+        casos_al_menos_roja += 1
+        if muestra.count(1) == 1:        # .count(1) cuenta cuantas azules hay
+            casos_1_azul += 1
+print(f"[P3] P(exactamente 1 azul | al menos 1 roja) = {casos_1_azul / casos_al_menos_roja:.4f}")
+
+# ── PREGUNTA 4: Extraer 3 canicas. P(todas de distinto color) ─
+# Cambiamos el tamano de la muestra a 3 (random.sample(caja, 3)).
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(caja, 3)
+    # Las 3 son de distinto color si las 3 son diferentes entre si.
+    if muestra[0] != muestra[1] and muestra[0] != muestra[2] and muestra[1] != muestra[2]:
+        casos += 1
+print(f"[P4] P(3 canicas de distinto color) = {casos / R:.4f}")
+
+# ── PREGUNTA 5: Dos cajas. P(Caja 1 | ambas rojas) ───────────
+# Caja 1: 5R 3A 2V | Caja 2: 2R 5A 3V
+caja1 = [0]*5 + [1]*3 + [2]*2
+caja2 = [0]*2 + [1]*5 + [2]*3
+random.seed(SEED)
+casos_ambas_rojas = 0   # denominador: salieron 2 rojas
+casos_c1_rr = 0         # numerador: 2 rojas Y venian de la Caja 1
+for _ in range(R):
+    caja_elegida = random.randint(0, 1)            # 0 = Caja 1, 1 = Caja 2
+    caja_actual = caja1 if caja_elegida == 0 else caja2
+    muestra = random.sample(caja_actual, 2)
+    if muestra[0] == 0 and muestra[1] == 0:        # ambas rojas
+        casos_ambas_rojas += 1
+        if caja_elegida == 0:
+            casos_c1_rr += 1
+print(f"[P5] P(Caja 1 | ambas rojas) = {casos_c1_rr / casos_ambas_rojas:.4f}")

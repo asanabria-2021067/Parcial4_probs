@@ -67,3 +67,79 @@ son_independientes = abs(p_ambas_ases - p_A_por_B) < TOLERANCIA
 print(f"P(ambas ases) = {p_ambas_ases:.4f}")
 print(f"P(A) * P(B) = {p_A_por_B:.4f}")
 print(f"Los eventos son independientes: {son_independientes}")
+
+
+# --------------------- PREGUNTAS PRUEBA -----------------------
+# Cada bloque es independiente: vuelve a fijar la semilla (random.seed(SEED))
+# para que su resultado sea reproducible por separado.
+# Descomenta o ejecuta el archivo completo para ver todas las respuestas.
+
+# NOTA: Para preguntas de palo y figura usamos el modelo COMPLETO de la baraja:
+#   valor = carta % 13   ->  0 = As, 1..9 = 2..10, 10 = J, 11 = Q, 12 = K
+#   palo  = carta // 13  ->  0 = corazones, 1 = diamantes, 2 = treboles, 3 = espadas
+# (Bajo este modelo los cuatro Ases quedan en las posiciones 0, 13, 26 y 39.)
+baraja = list(range(52))
+
+# ── PREGUNTA 1: P(al menos 1 As) ─────────────────────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(baraja, 2)
+    if muestra[0] % 13 == 0 or muestra[1] % 13 == 0:   # algun As (valor 0)
+        casos += 1
+print(f"[P1] P(al menos 1 As) = {casos / R:.4f}")
+
+# ── PREGUNTA 2: P(ambas cartas del mismo palo) ───────────────
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(baraja, 2)
+    if muestra[0] // 13 == muestra[1] // 13:   # mismo palo
+        casos += 1
+print(f"[P2] P(mismo palo) = {casos / R:.4f}")
+
+# ── PREGUNTA 3: P(ambas cartas son rojas) ────────────────────
+# Roja = corazones (palo 0) o diamantes (palo 1), es decir palo <= 1.
+random.seed(SEED)
+casos = 0
+for _ in range(R):
+    muestra = random.sample(baraja, 2)
+    if muestra[0] // 13 <= 1 and muestra[1] // 13 <= 1:
+        casos += 1
+print(f"[P3] P(ambas rojas) = {casos / R:.4f}")
+
+# ── PREGUNTA 4: E[numero de Ases extraidos] ──────────────────
+# X puede ser 0, 1 o 2. Acumulamos cuantos Ases salieron en cada extraccion.
+random.seed(SEED)
+suma_ases = 0
+for _ in range(R):
+    muestra = random.sample(baraja, 2)
+    nro_ases = (1 if muestra[0] % 13 == 0 else 0) + (1 if muestra[1] % 13 == 0 else 0)
+    suma_ases += nro_ases
+print(f"[P4] E[# de Ases] = {suma_ases / R:.4f}")
+
+# ── PREGUNTA 5: Independencia de A y B ───────────────────────
+# A: la primera carta es figura (J, Q o K)  | B: la segunda carta es figura.
+# Comparamos P(A y B) con P(A)*P(B); si son (casi) iguales -> independientes.
+random.seed(SEED)
+casos_A = 0
+casos_B = 0
+casos_AB = 0
+for _ in range(R):
+    muestra = random.sample(baraja, 2)
+    A = (muestra[0] % 13) >= 10    # primera es figura
+    B = (muestra[1] % 13) >= 10    # segunda es figura
+    if A:
+        casos_A += 1
+    if B:
+        casos_B += 1
+    if A and B:
+        casos_AB += 1
+p_A = casos_A / R
+p_B = casos_B / R
+p_AB = casos_AB / R
+TOLERANCIA = 0.0005
+son_independientes = abs(p_AB - p_A * p_B) < TOLERANCIA
+print(f"[P5] P(A) * P(B) = {p_A * p_B:.4f}")
+print(f"[P5] P(A y B)    = {p_AB:.4f}")
+print(f"[P5] A y B son independientes: {son_independientes}")
